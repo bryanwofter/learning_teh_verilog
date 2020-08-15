@@ -9,7 +9,8 @@ module pixel_counter#(
     input wire [c-1:0] r_blank,
     output wire [c-1:0] q,
     output wire blank,
-    output wire sync
+    output wire sync,
+    output wire r
 );
 
 reg i_rst;
@@ -83,7 +84,15 @@ always @(negedge r_blanking)
 always @(0 == q)
 begin
     if (1 == rst)
+    begin
         i_rst <= 1;
+        r <= 1;
+    end
+end
+
+always @(posedge clk, negedge rst)
+begin
+    r <= 0;
 end
 
 assign blank = r_blanking;
