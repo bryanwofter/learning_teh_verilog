@@ -16,12 +16,12 @@ reg i_rst;
 
 always @(posedge rst, negedge rst)
 begin
-    assign i_rst = rst;
+    i_rst <= rst;
 end
 
 binary_counter#(c) p_c (
     .clk(clk),
-    .rst(rst),
+    .rst(i_rst),
     .q(q)
 );
 
@@ -55,7 +55,7 @@ comparator#(c) cmp_s_sync(
 
 comparator#(c) cmp_r_blank (
     .d(q),
-    .i(s_blank),
+    .i(r_blank),
     .q(r_blanking_edge),
     .q_not(r_blanking_edge_not)
 );
@@ -70,6 +70,12 @@ comparator#(c) cml_r_sync (
 always @(posedge r_blanking_edge)
 begin
     r_blanking <= ~(r_blanking);
+end
+
+always @(negedge r_blanking)
+begin
+    i_rst <= 0;
+    i_rst <= 1;
 end
 
 always @(posedge r_syncing_edge)
