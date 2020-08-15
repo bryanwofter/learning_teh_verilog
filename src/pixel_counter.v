@@ -1,5 +1,5 @@
 module pixel_counter#(
-    parameter c
+    parameter c=8
 ) (
     input wire clk,
     input wire rst,
@@ -25,51 +25,37 @@ binary_counter#(c) p_c (
     .q(q)
 );
 
-wire r_ignore;
-wire r_s_blank;
-wire r_s_sync;
-wire r_r_sync;
-wire r_r_blank;
+reg r_blanking;
+reg r_syncing;
 
-comparator cmp_s_blank (
+initial
+begin
+    r_blanking <= 0;
+    r_syncing <= 0;
+end
+
+wire r_blanking_edge;
+wire r_blanking_edge_not;
+wire r_syncing_edge;
+wire r_syncing_edge_not;
+
+comparator#(c) cmp_s_blank(
     .d(q),
     .i(s_blank),
-    .q(r_s_blank),
-    .q_not(r_ignore)
+    .q(r_blanking_edge),
+    .q(r_blanking_edge_not)
 );
 
-comparator cmp_r_blank (
-    .d(q),
-    .i(r_blank),
-    .q(r_r_blank),
-    .q_not(r_ignore)
-);
+always @(posedge r_blanking_edge)
+begin
+    r_blanking <= ~(r_blanking);
+end
 
-sr_latch sr_blank (
-    .s(r_s_blank),
-    .r(r_r_blank),
-    .q(blank),
-    .q_not(r_ignore)
-);
+always @(posedge r_syncing_edge)
+begin
+    r_syncing <= ~(r_syncing);
+end
 
-comparator cmp_s_sync (
-    .d(q),
-    .i(s_sync),
-    .q(r_s_sync),
-    .q_not(r_ignore)
-);
-
-comparator cmp_r_sync (
-    .d(q),
-    .i(r_sync),
-    .q(r_r_sync),
-    .q_not(r_ignore)
-);
-
-sr_latch sr_sync (
-    .s(r_s_sync),
-    .r(r_r_sync),
-    .q(sync),
-    .q_not(r_ignore)
-);
+assign blank = r_blanking;
+assign sync = r_syncing;
 endmodule
