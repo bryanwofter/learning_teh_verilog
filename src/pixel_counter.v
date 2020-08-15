@@ -10,17 +10,18 @@ module pixel_counter#(
     output wire [c-1:0] q,
     output wire blank,
     output wire sync,
-    output wire r
+    output wire ripple
 );
 
-reg i_rst;
+reg r_rst;
+reg r_ripple;
 
 always @(posedge rst, negedge rst)
-    i_rst <= rst;
+    r_rst <= rst;
 
 binary_counter#(c) p_c (
     .clk(clk),
-    .rst(i_rst),
+    .rst(r_rst),
     .q(q)
 );
 
@@ -71,30 +72,25 @@ always @(posedge r_blanking_edge)
 
 always @(negedge r_blanking)
 begin
-    i_rst <= 0;
-    i_rst <= 1;
+    r_rst <= 0;
+    r_ripple <= 1;
 end
 
 always @(posedge r_syncing_edge)
     r_syncing <= ~(r_syncing);
 
-always @(negedge r_blanking)
-    i_rst <= 0;
-
 always @(0 == q)
 begin
     if (1 == rst)
-    begin
         i_rst <= 1;
-        r <= 1;
-    end
 end
 
 always @(posedge clk, negedge rst)
 begin
-    r <= 0;
+    r_ripple <= 0;
 end
 
 assign blank = r_blanking;
 assign sync = r_syncing;
+assign ripple = r_ripple;
 endmodule
