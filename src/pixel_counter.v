@@ -43,7 +43,28 @@ comparator#(c) cmp_s_blank(
     .d(q),
     .i(s_blank),
     .q(r_blanking_edge),
-    .q(r_blanking_edge_not)
+    .q_not(r_blanking_edge_not)
+);
+
+comparator#(c) cmp_s_sync(
+    .d(q),
+    .i(s_sync),
+    .q(r_syncing_edge),
+    .q_not(r_syncing_edge_not)
+);
+
+comparator#(c) cmp_r_blank (
+    .d(q),
+    .i(s_blank),
+    .q(r_blanking_edge),
+    .q_not(r_blanking_edge_not)
+);
+
+comparator#(c) cml_r_sync (
+    .d(q),
+    .i(r_sync),
+    .q(r_syncing_edge),
+    .q_not(r_syncing_edge_not)
 );
 
 always @(posedge r_blanking_edge)
