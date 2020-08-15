@@ -17,5 +17,5 @@ module d_flipflop (
     end
   
   assign q = r_q;
-  assign q_not = ~r_q;
+  assign q_not = ~(r_q);
 endmodule
