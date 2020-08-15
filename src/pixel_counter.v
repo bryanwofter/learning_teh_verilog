@@ -82,7 +82,7 @@ always @(posedge r_syncing_edge)
 always @(0 == q)
 begin
     if (1 == rst)
-        i_rst <= 1;
+        r_rst <= 1;
 end
 
 always @(posedge clk, negedge rst)
