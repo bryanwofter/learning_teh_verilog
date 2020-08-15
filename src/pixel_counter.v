@@ -1,7 +1,13 @@
-module pixel_counter (
+module pixel_counter#(
+    parameter c
+) (
     input wire clk,
     input wire rst,
-    output wire [9:0] q,
+    input wire [c-1:0] s_blank,
+    input wire [c-1:0] s_sync,
+    input wire [c-1:0] r_sync,
+    input wire [c-1:0] r_blank,
+    output wire [c-1:0] q,
     output wire blank,
     output wire sync
 );
@@ -13,35 +19,56 @@ begin
     assign i_rst = rst;
 end
 
-binary_counter#(10) p_c (
+binary_counter#(c) p_c (
     .clk(clk),
     .rst(rst),
     .q(q)
 );
 
 wire r_ignore;
-wire r_400;
-wire r_410;
-wire r_484;
-wire r_528;
+wire r_s_blank;
+wire r_s_sync;
+wire r_r_sync;
+wire r_r_blank;
 
-comparator cmp_400 (
+comparator cmp_s_blank (
     .d(q),
-    .i(10'b0110010000),
-    .q(r_400),
+    .i(s_blank),
+    .q(r_s_blank),
+    .q_not(r_ignore)
+);
+
+comparator cmp_r_blank (
+    .d(q),
+    .i(r_blank),
+    .q(r_r_blank),
     .q_not(r_ignore)
 );
 
 sr_latch sr_blank (
-    .s(r_400),
-    .r(r_528),
+    .s(r_s_blank),
+    .r(r_r_blank),
     .q(blank),
     .q_not(r_ignore)
 );
 
+comparator cmp_s_sync (
+    .d(q),
+    .i(s_sync),
+    .q(r_s_sync),
+    .q_not(r_ignore)
+);
+
+comparator cmp_r_sync (
+    .d(q),
+    .i(r_sync),
+    .q(r_r_sync),
+    .q_not(r_ignore)
+);
+
 sr_latch sr_sync (
-    .s(r_410),
-    .r(r_484),
+    .s(r_s_sync),
+    .r(r_r_sync),
     .q(sync),
     .q_not(r_ignore)
 );
