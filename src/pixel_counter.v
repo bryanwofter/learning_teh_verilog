@@ -15,9 +15,7 @@ module pixel_counter#(
 reg i_rst;
 
 always @(posedge rst, negedge rst)
-begin
     i_rst <= rst;
-end
 
 binary_counter#(c) p_c (
     .clk(clk),
@@ -68,9 +66,7 @@ comparator#(c) cml_r_sync (
 );
 
 always @(posedge r_blanking_edge)
-begin
     r_blanking <= ~(r_blanking);
-end
 
 always @(negedge r_blanking)
 begin
@@ -79,8 +75,15 @@ begin
 end
 
 always @(posedge r_syncing_edge)
-begin
     r_syncing <= ~(r_syncing);
+
+always @(negedge r_blanking)
+    i_rst <= 0;
+
+always @(0 == q)
+begin
+    if (1 == rst)
+        i_rst <= 1;
 end
 
 assign blank = r_blanking;
