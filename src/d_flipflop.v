@@ -1,5 +1,6 @@
 module d_flipflop (
     input wire d,
+    input wire p,
     input wire clk,
     input wire rst,
     output wire q,
@@ -11,7 +12,7 @@ reg r_q;
 always @(posedge clk, negedge rst)
 begin
     if (~rst)
-        r_q <= 1'b0;
+        r_q <= p;
     else
         r_q <= d;
 end
