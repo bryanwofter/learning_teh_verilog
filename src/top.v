@@ -1,12 +1,12 @@
 // look in pins.pcf for all the pin names on the TinyFPGA BX board
 module top (
-    input CLK,
-    input PIN_14,
-    output PIN_13,
-    output PIN_12,
-    output PIN_11,
-    output PIN_10,
-    output PIN_9,
+    input CLK,     // 16MHz clock - Built-in, currently unused
+    input PIN_14,  // 40MHz clock
+    output PIN_13, // Blanking signal
+    output PIN_12, // H-sync signal
+    output PIN_11, // TODO: Enable/clock for draw core?
+    output PIN_10, // V-sync signal
+    output PIN_9,  // Address bit 17
     output PIN_8,
     output PIN_7,
     output PIN_6,
@@ -24,14 +24,14 @@ module top (
     output PIN_18,
     output PIN_17,
     output PIN_16,
-    output PIN_15,
-    output LED,
-    output USBPU  // USB pull-up resistor
+    output PIN_15, // Address bit 0
+    output USBPU   // USB pull-up resistor
 );
-    // drive USB pull-up resistor to '0' to disable USB
     assign USBPU = 0;
 
-    wire w_h_clk;
+    wire w_h_clk,
+         w_h_blank,
+         w_v_blank;
 
     clk_divider half_clk(
         .clk(PIN_14),
@@ -51,16 +51,30 @@ module top (
         .V_BLANK_E(10'b 1001110100)
     ) ddc (
         .clk(w_h_clk),
-        .h_blank(PIN_13),
+        .h_blank(w_h_blank),
         .h_sync(PIN_12),
-        .v_blank(PIN_11),
+        .v_blank(w_v_blank),
         .v_sync(PIN_10),
-        .addr({PIN_9,  PIN_8,  PIN_7,
-               PIN_6,  PIN_5,  PIN_4,
-               PIN_3,  PIN_2,  PIN_1,
-               PIN_24, PIN_23, PIN_22,
-               PIN_21, PIN_20, PIN_19,
-               PIN_18, PIN_17, PIN_16,
+        .addr({PIN_9,
+               PIN_8,
+               PIN_7,
+               PIN_6,
+               PIN_5,
+               PIN_4,
+               PIN_3,
+               PIN_2,
+               PIN_1,
+               PIN_24,
+               PIN_23,
+               PIN_22,
+               PIN_21,
+               PIN_20,
+               PIN_19,
+               PIN_18,
+               PIN_17,
+               PIN_16,
                PIN_15})
     );
+
+    assign PIN_13 = (w_h_blank | w_v_blank);
 endmodule
