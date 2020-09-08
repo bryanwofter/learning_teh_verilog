@@ -31,9 +31,7 @@ module top (
     // drive USB pull-up resistor to '0' to disable USB
     assign USBPU = 0;
 
-    wire w_h_clk,
-         w_h_sync,
-         w_v_sync;
+    wire w_h_clk;
 
     clk_divider half_clk(
         .clk(PIN_14),
@@ -54,7 +52,7 @@ module top (
     ) ddc (
         .clk(w_h_clk),
         .h_blank(PIN_13),
-        .h_sync(w_h_sync),
+        .h_sync(PIN_12),
         .v_blank(PIN_11),
         .v_sync(PIN_10),
         .addr({PIN_9,  PIN_8,  PIN_7,
@@ -65,6 +63,4 @@ module top (
                PIN_18, PIN_17, PIN_16,
                PIN_15})
     );
-
-    assign PIN_12 = ~w_h_sync;
 endmodule
