@@ -49,11 +49,10 @@ module top (
         .V_SYNC_S(10'b 1001011001),
         .V_SYNC_E(10'b 1001011101),
         .V_BLANK_E(10'b 1001110100)
-    ) ddc (
+    ) display_driver(
         .clk(w_h_clk),
-        .h_blank(w_h_blank),
+        .blanking(PIN_13),
         .h_sync(PIN_12),
-        .v_blank(w_v_blank),
         .v_sync(PIN_10),
         .addr({PIN_9,
                PIN_8,
@@ -75,6 +74,4 @@ module top (
                PIN_16,
                PIN_15})
     );
-
-    assign PIN_13 = (w_h_blank | w_v_blank);
 endmodule
